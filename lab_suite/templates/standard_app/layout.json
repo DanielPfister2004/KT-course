@@ -1,0 +1,154 @@
+{
+  "version": 1,
+  "dashboard": {
+    "id": "dashboard",
+    "layout_type": "column",
+    "children": [
+      {
+        "type": "container",
+        "id": "row_0",
+        "layout_type": "rows_columns",
+        "align_items": "start",
+        "children": [
+          {
+            "type": "widget",
+            "id": "widget_1",
+            "widget_type": "banner_vue",
+            "props": {
+              "text1": "KT-Labor",
+              "text2": "Übung ",
+              "text3": "Huffman-Tree",
+              "height": "80px",
+              "font_family": "Consolas",
+              "font_size1": "2.5rem",
+              "font_size2": "",
+              "font_size3": "",
+              "text_color": "",
+              "gradient_start": "#0d47a1",
+              "gradient_end": "#1565c0",
+              "flex": true
+            }
+          }
+        ]
+      },
+      {
+        "type": "container",
+        "id": "row_1",
+        "layout_type": "rows_columns",
+        "align_items": "center",
+        "children": [
+          {
+            "type": "widget",
+            "id": "widget_2",
+            "widget_type": "checkbox",
+            "props": {
+              "label": "Checkbox",
+              "value": false
+            }
+          }
+        ]
+      },
+      {
+        "type": "container",
+        "id": "row_2",
+        "layout_type": "rows_columns",
+        "align_items": "start",
+        "children": [
+          {
+            "type": "widget",
+            "id": "widget_3",
+            "widget_type": "markdown",
+            "props": {
+              "content": "Enter your text ...",
+              "editable": true,
+              "placeholder": "Ihre Antwort oder Anmerkung …",
+              "extras": "latex",
+              "height": " 800px",
+              "height_mode": "monospace",
+              "min_width": "400px",
+              "user_id": "my_text",
+              "render_markdown": false,
+              "font": "monospace",
+              "bg_color": "#ddeef0",
+              "framed": true
+            }
+          },
+          {
+            "type": "widget",
+            "id": "widget_4",
+            "widget_type": "markdown",
+            "props": {
+              "content": "Huffman-code table",
+              "editable": true,
+              "placeholder": "Ihre Antwort oder Anmerkung …",
+              "extras": "latex",
+              "height": "800px",
+              "height_mode": "monospace",
+              "min_width": "400px",
+              "user_id": "code_table",
+              "render_markdown": false,
+              "font": "monospace",
+              "framed": false,
+              "bg_color": "#fcf7f7"
+            }
+          },
+          {
+            "type": "widget",
+            "id": "widget_6",
+            "widget_type": "markdown",
+            "props": {
+              "content": "Huffman-code tree",
+              "editable": true,
+              "placeholder": "Ihre Antwort oder Anmerkung …",
+              "extras": "latex",
+              "height": "800px",
+              "height_mode": "auto",
+              "min_width": "400px",
+              "user_id": "code_tree",
+              "render_markdown": false,
+              "font": "monospace",
+              "bg_color": "#f0ffe3",
+              "framed": false
+            }
+          }
+        ]
+      },
+      {
+        "type": "container",
+        "id": "row_3",
+        "layout_type": "rows_columns",
+        "align_items": "center",
+        "children": [
+          {
+            "type": "widget",
+            "id": "widget_5",
+            "widget_type": "slider",
+            "props": {
+              "label": "Slider",
+              "min": 0,
+              "max": 10,
+              "value": 1,
+              "step": 0.01,
+              "label_position": "below",
+              "label_width": "",
+              "control_width": ""
+            }
+          },
+          {
+            "type": "widget",
+            "id": "widget_7",
+            "widget_type": "button",
+            "props": {
+              "label": "Button"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "appearance": {
+    "container_background": "#f0f0f0",
+    "container_padding": "12px",
+    "container_gap": "0.5rem"
+  }
+}
