@@ -1,8 +1,48 @@
 # KT-Lab – Anleitung für Studierende
 
-Nach dem Klonen dieses Repos: Umgebung einrichten und Labs starten.
+Lernplattform für das Fach **Kommunikationstechnologie** an der **FH JOANNEUM**. Dieses Repository enthält interaktive Labs, Skripte und Materialien zum Selbststudium und für die Übungen im Kurs.
 
-**Python im Kurs:** Ihr lernt Python mit drei Anwendungsarten – **Konsolen-Output** (print, Logs), **Matplotlib-Fenster** (klassische Skripte mit `plt.show()`) und **Browser-GUI** (Labs mit interaktiver Weboberfläche). Alle drei nutzen dieselbe Umgebung (`requirements.txt`). Für die Labs wird **Python 3.10** empfohlen.
+Nach dem Klonen: Umgebung einrichten und Labs starten (siehe unten).
+
+---
+
+## Repo-Struktur
+
+```
+KT-course/
+├── README.md              # Diese Anleitung
+├── requirements.txt       # Python-Abhängigkeiten (im Repo-Root)
+├── start_launcher.ps1    # Startet den App-Launcher (Windows PowerShell)
+├── start_launcher.bat     # Startet den App-Launcher (Windows CMD)
+├── start_launcher.sh      # Startet den App-Launcher (Linux/macOS)
+├── lab_suite/             # Kern der Lernplattform
+│   ├── app_launcher/      # Launcher-App: Übersicht aller Labs im Browser
+│   ├── labs/              # Interaktive Labs nach Kapiteln
+│   │   ├── 01_*           # Kapitel 1 (z. B. Informationstheorie, Codierung, Datenkompression)
+│   │   ├── 02_*           # Kapitel 2 (z. B. Signale)
+│   │   ├── 03_*           # Kapitel 3 (z. B. Übertragungskanal)
+│   │   ├── static/        # Statische Ressourcen (z. B. Plotly.js)
+│   │   └── widgets/       # Wiederverwendbare UI-Bausteine (z. B. Plotly-Graphen, VU-Meter)
+│   ├── templates/         # Vorlagen für die Lab-Oberfläche
+│   └── grid_editor/       # Editor-Unterstützung für Layouts
+└── rtl-sdr-driver/        # Optional: Material/Treiber zu RTL-SDR
+```
+
+Die **Labs** sind nach Kapiteln nummeriert (z. B. `01_02_Informationstheorie`, `02_01_Signale_basics`). Der **App-Launcher** (`python -m app_launcher` aus `lab_suite`) zeigt alle Einträge gruppiert an und startet die gewünschte Anwendung im Browser.
+
+---
+
+## Inhalt und Zielgruppe
+
+- **Zielgruppe:** Studierende des Faches Kommunikationstechnologie (FH JOANNEUM).
+- **Inhalt:** Thematische Labs zu Grundlagen der KT – u. a. Informationstheorie, Codierung, Datenkompression, Signale und Übertragungskanäle. Jedes Lab bietet eine browserbasierte, interaktive Oberfläche (NiceGUI) mit Visualisierungen (z. B. Plotly).
+- **Technik:** Python 3.10, eine gemeinsame `requirements.txt` für Konsolen-Skripte, Matplotlib-Anwendungen und die Browser-Labs. Plotly wird lokal eingebunden, sodass die Labs ohne Internetverbindung laufen können.
+
+---
+
+## Python im Kurs
+
+Ihr lernt Python mit drei Anwendungsarten – **Konsolen-Output** (print, Logs), **Matplotlib-Fenster** (klassische Skripte mit `plt.show()`) und **Browser-GUI** (Labs mit interaktiver Weboberfläche). Alle drei nutzen dieselbe Umgebung (`requirements.txt`). Für die Labs wird **Python 3.10** empfohlen.
 
 ---
 
