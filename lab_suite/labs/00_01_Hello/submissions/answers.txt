@@ -1,0 +1,13 @@
+Frage 1: Wie schwierig war es für dich (Skala 1-5; 1 = sehr einfach  5 = sehr schwierig), das Git repo zu installieren?
+
+2
+
+Frage 2: Welchen Computertyp verwendest du hauptsächlich?
+
+a) Desktop-PC oder Laptop (Windows/Linux)
+b) MacBook / iMac
+c) Tablet (Android)
+d) iPad (iPadOS)
+e) Sonstiges: _______
+
+a) Lenovo

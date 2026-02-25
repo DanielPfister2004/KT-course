@@ -20,6 +20,10 @@ python lab_suite/scripts/free_port_8082.py
 .\free_port_8082.ps1
 ```
 
+**Git (Expansion am Anfang):** Oben erscheint eine Expansion **„Git (Status, Log, Remote, Pull)“**. Buttons: **Git Status** (Ausgabe von `git status`), **Git Log (-10)** (`git log --oneline -10`), **Git Remote** (`git remote -v`), **Pull (upstream)** (`git pull upstream <Branch>`). Der jeweils ausgeführte Befehl und die Konsolenausgabe werden darunter in einem scrollbaren Bereich angezeigt. So sehen Studierende genau, welches Kommando ausgeführt wurde.
+
+**Git Push pro Aufgabe:** In jeder Aufgabenkarte mit submissions-Ordner gibt es einen Button **„Git Push“**. Ein Klick führt aus: `git add lab_suite/labs/<Ordner>/submissions`, `git commit -m "committing ..."`, `git push origin`. Ein Dialog zeigt die ausgeführten Befehle und die Ausgabe (Feedback für Studierende). Voraussetzung: Das Projekt liegt in einem Git-Repo (z. B. Studenten-Fork).
+
 ## Erkennung
 
 Es wird **für jeden Unterordner** unter `labs/` mindestens eine **Task-Card** erzeugt. Drei Fälle:

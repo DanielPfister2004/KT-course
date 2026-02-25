@@ -14,6 +14,7 @@ from .widgets import Banner
 from .scan import ChapterGroup, LabEntry, scan_labs
 from . import submit
 from . import port_check
+from . import git_ops
 
 # lab_suite = Parent von app_launcher
 LAB_SUITE_ROOT = Path(__file__).resolve().parent.parent
@@ -611,8 +612,108 @@ def _on_free_port(port: int, pid: int) -> None:
         ui.notify("Port konnte nicht freigegeben werden (evtl. fehlen Rechte).", type="negative")
 
 
+def _show_git_output_in_container(container: ui.column, cmd_str: str, stdout: str, stderr: str) -> None:
+    """Füllt den Container mit Befehl und Ausgabe (scrollbar)."""
+    container.clear()
+    with container:
+        ui.label("Ausgeführter Befehl:").classes("text-caption text-weight-bold")
+        ui.html(
+            f'<pre class="q-pa-sm bg-grey-3 rounded-borders" style="white-space:pre-wrap;max-height:120px;overflow:auto;font-size:0.85em;">{_escape_html(cmd_str)}</pre>'
+        )
+        ui.label("Ausgabe:").classes("text-caption text-weight-bold q-mt-sm")
+        combined = (stdout + "\n" + stderr).strip() or "(leer)"
+        ui.html(
+            f'<pre class="q-pa-sm bg-grey-3 rounded-borders" style="white-space:pre-wrap;max-height:280px;overflow:auto;font-size:0.85em;">{_escape_html(combined)}</pre>'
+        )
+
+
+def _escape_html(s: str) -> str:
+    return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;"))
+
+
+def _build_git_expansion() -> None:
+    """Expansion am Anfang: Git Status, Log, Remote, Pull – Befehl und Ausgabe sichtbar."""
+    repo_root = git_ops.get_repo_root(LAB_SUITE_ROOT)
+    with ui.expansion("Git (Status, Log, Remote, Pull)", value=False).classes("w-full q-mb-md"):
+        if repo_root is None:
+            ui.label("Kein Git-Repo erkannt (oder git nicht im PATH).").classes("text-body2 text-grey-7")
+            return
+        ui.label(f"Repo: {repo_root}").classes("text-caption text-grey-7 q-mb-sm")
+        git_output_container = ui.column().classes("w-full")
+        ui.label("Klicke einen Button – ausgeführter Befehl und Ausgabe erscheinen unten.").classes(
+            "text-caption text-grey-7 q-mb-xs"
+        )
+
+        def run_and_show(args: list[str], description: str) -> None:
+            ok, out, err, cmd = git_ops.run_git(args, repo_root)
+            _show_git_output_in_container(git_output_container, cmd, out, err)
+            if ok:
+                ui.notify(f"{description}: OK", type="positive")
+            else:
+                ui.notify(f"{description}: Fehler", type="warning")
+
+        with ui.row().classes("q-gutter-sm wrap"):
+            ui.button("Git Status", on_click=lambda: run_and_show(["status"], "Git Status")).props(
+                "flat dense color=secondary"
+            )
+            ui.button("Git Log (-10)", on_click=lambda: run_and_show(["log", "--oneline", "-10"], "Git Log")).props(
+                "flat dense color=secondary"
+            )
+            ui.button("Git Remote", on_click=lambda: run_and_show(["remote", "-v"], "Git Remote")).props(
+                "flat dense color=secondary"
+            )
+            def do_pull() -> None:
+                ok_b, out, _, _ = git_ops.run_git(["rev-parse", "--abbrev-ref", "HEAD"], repo_root)
+                branch = out.strip() if ok_b and out.strip() else "main"
+                run_and_show(["pull", "upstream", branch, "--no-edit"], "Pull upstream")
+
+            ui.button("Pull (upstream)", on_click=do_pull).props("flat dense color=primary").tooltip(
+                "git pull upstream <aktueller Branch> – Remote 'upstream' muss existieren"
+            )
+        ui.separator().classes("q-my-sm")
+        with git_output_container:
+            ui.label("(Befehl und Ausgabe nach Klick auf einen der Buttons oben)").classes(
+                "text-caption text-grey-6"
+            )
+
+
+def _show_git_push_dialog(folder_name: str) -> None:
+    """Dialog: Git add/commit/push für submissions-Ordner; zeigt ausgeführte Befehle und Ausgabe."""
+    repo_root = git_ops.get_repo_root(LAB_SUITE_ROOT)
+    if repo_root is None:
+        ui.notify("Kein Git-Repo erkannt.", type="warning")
+        return
+    ok, msg, steps = git_ops.push_submissions_folder(repo_root, folder_name)
+    lines: list[str] = []
+    for cmd, out, err in steps:
+        lines.append(f"$ {cmd}")
+        if out:
+            lines.append(out)
+        if err:
+            lines.append(err)
+        lines.append("")
+    text = "\n".join(lines).strip()
+    with ui.dialog() as d, ui.card().classes("q-pa-md min-w-[360px] max-w-[90vw] max-h-[85vh] overflow-auto"):
+        ui.label("Git Push (Abgabe)").classes("text-subtitle1 text-weight-medium")
+        ui.label(folder_name).classes("text-caption text-grey-7 q-mb-sm")
+        if ok:
+            ui.label(msg).classes("text-body2 text-green-8")
+        else:
+            ui.label(msg).classes("text-body2 text-red-8")
+        ui.label("Ausgeführte Befehle und Ausgabe:").classes("text-caption text-weight-bold q-mt-sm")
+        ui.html(
+            f'<pre class="q-pa-sm bg-grey-3 rounded-borders" style="white-space:pre-wrap;max-height:320px;overflow:auto;font-size:0.85em;">{_escape_html(text)}</pre>'
+        )
+        ui.button("Schließen", on_click=d.close).props("flat color=primary").classes("q-mt-sm")
+    d.open()
+    if ok:
+        ui.notify("Push erfolgreich.", type="positive")
+    else:
+        ui.notify(msg, type="negative")
+
+
 def build_ui() -> None:
-    """Baut die Launcher-UI: Kapitel-Gruppen, Einträge mit Start-Button, Submit-Zeile pro Lab."""
+    """Baut die Launcher-UI: Git-Expansion, Kapitel-Gruppen, Einträge mit Start-Button, Submit-Zeile pro Lab."""
     chapters = scan_labs(LABS_DIR)
     if not chapters:
         ui.label("Keine Labs gefunden. Bitte lab_suite/labs/ prüfen.").classes("text-weight-medium")
@@ -620,6 +721,8 @@ def build_ui() -> None:
 
     instructor_mode = _is_instructor_mode()
     submit_email = submit.read_submit_to_email(LAB_SUITE_ROOT)
+
+    _build_git_expansion()
 
     ui.label("Verfügbare Labs und Skripte").classes("text-h5 q-mb-md")
     ui.label("Klicke auf „Starten“, um eine App (Browser) oder ein Skript (Konsole/Matplotlib) zu starten.").classes(
@@ -765,6 +868,14 @@ def build_ui() -> None:
                             )
                             if task_done_date:
                                 ui.label(f"Abgabe am {task_done_date}").classes("text-caption text-weight-medium text-green-8")
+                            if any(e.has_submissions_folder for e in folder_entries):
+                                ui.button(
+                                    "Git Push",
+                                    icon="push",
+                                    on_click=lambda fn=folder_name: _show_git_push_dialog(fn),
+                                ).props("flat dense color=primary").tooltip(
+                                    "git add submissions/ → commit → push origin (Ausgabe im Dialog)"
+                                )
 
                 # Pro Lab (eindeutige folder_name) eine Submit-Zeile: ZIP, Ordner öffnen, E-Mail – unter Expansion (default zu)
                 unique_folders = sorted({e.folder_name for e in group.entries})
