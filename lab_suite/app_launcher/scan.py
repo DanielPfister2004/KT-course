@@ -15,8 +15,8 @@ SCRIPT_EXCLUDE_DIRS = frozenset({"_core", "assignments", "templates"})
 
 @dataclass
 class LabEntry:
-    """Ein Eintrag im Launcher: App, Skript oder reine Dokumentenabgabe (ohne Programmieraufgabe)."""
-    kind: str  # "app" | "script" | "document"
+    """Ein Eintrag im Launcher: App, Skript, Jupyter-Notebook oder reine Dokumentenabgabe."""
+    kind: str  # "app" | "script" | "notebook" | "document"
     chapter: str  # z. B. "01", "03"
     folder_name: str  # Ordnername, z. B. 01_01_Signale_basics
     label: str  # Anzeigename
@@ -41,10 +41,12 @@ def _chapter_from_folder(folder_name: str) -> str:
 
 
 def _top_level_scripts(lab_dir: Path) -> list[str]:
-    """Nur .py-Dateien direkt im Ordner (nicht in _core, assignments, …)."""
+    """.py- und .ipynb-Dateien direkt im Ordner (nicht in _core, assignments, …)."""
     scripts = []
     for f in lab_dir.iterdir():
-        if not f.is_file() or f.suffix != ".py":
+        if not f.is_file():
+            continue
+        if f.suffix not in (".py", ".ipynb"):
             continue
         if f.name.startswith("__"):
             continue
@@ -58,9 +60,8 @@ def scan_labs(labs_root: Path) -> list[ChapterGroup]:
 
     Pro Aufgabenordner wird immer mindestens eine Task-Card erzeugt:
     - NiceGUI-App (__main__.py) → ein Eintrag kind="app" (Web-Icon).
-    - Keine App, aber Python-Skripte (oberste Ebene) → je Skript ein Eintrag kind="script" (Code-Icon).
-    - Weder App noch Skripte → ein Eintrag kind="document" (Dokument-Icon): reine Dokumentenabgabe,
-      gleiche submissions/-Nutzung, aber ohne „Starten“-Button.
+    - Keine App, aber .py/.ipynb (oberste Ebene) → je Datei ein Eintrag kind="script" bzw. kind="notebook" (Notebook-Icon).
+    - Weder App noch Skripte/Notebooks → ein Eintrag kind="document" (Dokument-Icon): reine Dokumentenabgabe.
     """
     if not labs_root.is_dir():
         return []
@@ -88,8 +89,9 @@ def scan_labs(labs_root: Path) -> list[ChapterGroup]:
             scripts = _top_level_scripts(item)
             if scripts:
                 for script_name in scripts:
+                    is_notebook = script_name.endswith(".ipynb")
                     entry = LabEntry(
-                        kind="script",
+                        kind="notebook" if is_notebook else "script",
                         chapter=chapter,
                         folder_name=folder_name,
                         label=f"{folder_name} / {script_name}",

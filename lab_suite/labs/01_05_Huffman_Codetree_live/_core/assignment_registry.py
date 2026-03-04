@@ -2,13 +2,15 @@
 Assignment-Registry: Wahlweise eine Fachaufgabe (Assignment) in die App einhängen.
 
 Assignments liegen im Ordner assignments/ (user_template.py, assignment_01.py, …).
-Aktives Assignment: GUI-Auswahl (speichert in assignments/active.json) oder Fallback ASSIGNMENT.
-Aus user_callbacks.py oder Timer: get_assignment() → Modul mit run_domain_logic() / solve_task().
+Wenn USE_SUBMISSIONS=1 gesetzt ist (Launcher startet App für Studierende), wird zuerst
+submissions/<name>.py geladen, falls vorhanden – damit Bearbeitungen aus submissions/ genutzt werden.
 """
 from __future__ import annotations
 
 import importlib
+import importlib.util
 import json
+import os
 from pathlib import Path
 from types import ModuleType
 
@@ -48,10 +50,27 @@ def _get_active_name(override: str | None) -> str | None:
 
 
 def get_assignment(active_override: str | None = None) -> ModuleType | None:
-    """Lädt das aktive Assignment-Modul aus assignments/ (user_template, assignment_01, …)."""
+    """Lädt das aktive Assignment-Modul. Bei USE_SUBMISSIONS zuerst aus submissions/, sonst assignments/."""
     name = _get_active_name(active_override)
     if not name:
         return None
+    if name in _NON_ASSIGNMENT_MODULES:
+        return None
+    if os.environ.get("USE_SUBMISSIONS"):
+        sub_path = APP_ROOT / "submissions" / f"{name}.py"
+        if sub_path.is_file():
+            try:
+                spec = importlib.util.spec_from_file_location(
+                    f"submissions_{name}",
+                    sub_path,
+                    submodule_search_locations=[],
+                )
+                if spec and spec.loader:
+                    mod = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(mod)
+                    return mod
+            except Exception:
+                pass
     parent = _parent_package()
     if not parent:
         return None

@@ -1,0 +1,5 @@
+Dieser Ordner ist veraltet.
+Der Inhalt liegt in: 11_Funktionen
+
+Bitte diesen Ordner (10_Funktionen) löschen, sobald kein Programm mehr darauf zugreift.
+Ursache für blockierte Umbenennung: Ein Prozess (z. B. Cursor/IDE oder Jupyter) hält den Ordner geöffnet.

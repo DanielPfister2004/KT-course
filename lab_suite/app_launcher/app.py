@@ -3,6 +3,7 @@ NiceGUI-Oberfläche des App-Launchers: hierarchische Liste, Start-Buttons, E-Mai
 """
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import sys
@@ -16,6 +17,7 @@ from .scan import ChapterGroup, LabEntry, scan_labs
 from . import submit
 from . import port_check
 from . import git_ops
+from . import submission_copy
 
 # lab_suite = Parent von app_launcher
 LAB_SUITE_ROOT = Path(__file__).resolve().parent.parent
@@ -24,12 +26,17 @@ INSTRUCTOR_KEY_PATH = LAB_SUITE_ROOT / ".instructor_key"
 
 
 def _launch_app(entry: LabEntry) -> None:
-    """Startet NiceGUI-App als Subprocess (python -m labs.xxx)."""
+    """Startet NiceGUI-App als Subprocess (python -m labs.xxx). Bei Studierenden: App lädt Code aus submissions/."""
+    env = os.environ.copy()
+    if not _is_instructor_mode():
+        submission_copy.ensure_app_submission_files(entry.folder_name)
+        env["USE_SUBMISSIONS"] = "1"
     cmd = [sys.executable, "-m", entry.run_target]
     try:
         subprocess.Popen(
             cmd,
             cwd=str(LAB_SUITE_ROOT),
+            env=env,
             creationflags=subprocess.CREATE_NEW_CONSOLE if sys.platform == "win32" else 0,
         )
         ui.notify(f"App wird gestartet: {entry.run_target}", type="positive")
@@ -38,15 +45,44 @@ def _launch_app(entry: LabEntry) -> None:
 
 
 def _launch_script(entry: LabEntry) -> None:
-    """Startet Skript als Subprocess (python labs/.../file.py)."""
-    cmd = [sys.executable, entry.run_target]
+    """Startet Skript (oder öffnet Notebook). Studierende: Alle .py/.ipynb des Ordners → submissions/, dann diese Datei."""
+    script_name = Path(entry.run_target).name
+    if _is_instructor_mode():
+        to_run = LAB_SUITE_ROOT / entry.run_target
+    else:
+        submission_copy.ensure_all_task_script_copies(entry.folder_name)
+        path = submission_copy.ensure_submission_copy(entry.folder_name, script_name)
+        if path is None:
+            to_run = LAB_SUITE_ROOT / entry.run_target
+        else:
+            to_run = path
+    if not to_run.is_file():
+        ui.notify(f"Datei nicht gefunden: {to_run.name}", type="negative")
+        return
     try:
-        subprocess.Popen(
-            cmd,
-            cwd=str(LAB_SUITE_ROOT),
-            creationflags=subprocess.CREATE_NEW_CONSOLE if sys.platform == "win32" else 0,
-        )
-        ui.notify(f"Skript wird gestartet: {entry.run_target}", type="positive")
+        if to_run.suffix == ".ipynb":
+            # Jupyter starten mit Notebook aus submissions/ → öffnet im Browser ohne Navigation
+            try:
+                subprocess.Popen(
+                    [sys.executable, "-m", "jupyter", "notebook", str(to_run)],
+                    cwd=str(LAB_SUITE_ROOT),
+                    creationflags=subprocess.CREATE_NEW_CONSOLE if sys.platform == "win32" else 0,
+                )
+                ui.notify(f"Jupyter startet mit Notebook: {to_run.name}", type="positive")
+            except Exception:
+                ok, msg = submit.open_file_with_default_app(to_run)
+                if ok:
+                    ui.notify(f"Notebook geöffnet: {to_run.name}", type="positive")
+                else:
+                    ui.notify(msg or "Jupyter nicht gefunden – Notebook mit Standard-App öffnen.", type="warning")
+        else:
+            cmd = [sys.executable, str(to_run)]
+            subprocess.Popen(
+                cmd,
+                cwd=str(LAB_SUITE_ROOT),
+                creationflags=subprocess.CREATE_NEW_CONSOLE if sys.platform == "win32" else 0,
+            )
+            ui.notify(f"Skript wird gestartet: {to_run.name}", type="positive")
     except Exception as e:
         ui.notify(f"Starten fehlgeschlagen: {e}", type="negative")
 
@@ -54,17 +90,24 @@ def _launch_script(entry: LabEntry) -> None:
 def _launch(entry: LabEntry) -> None:
     if entry.kind == "app":
         _launch_app(entry)
-    else:
+    elif entry.kind in ("script", "notebook"):
         _launch_script(entry)
 
 
 def _open_script_in_editor(entry: LabEntry) -> None:
-    """Öffnet das zum Eintrag gehörige Python-Skript im Standard-Editor (z. B. VS Code)."""
-    if entry.kind != "script":
+    """Öffnet Skript oder Notebook im Editor. Studierende: Alle .py/.ipynb des Ordners → submissions/, dann diese Datei."""
+    if entry.kind not in ("script", "notebook"):
         return
-    script_path = LAB_SUITE_ROOT / entry.run_target
+    script_name = Path(entry.run_target).name
+    if _is_instructor_mode():
+        script_path = LAB_SUITE_ROOT / entry.run_target
+    else:
+        submission_copy.ensure_all_task_script_copies(entry.folder_name)
+        script_path = submission_copy.ensure_submission_copy(entry.folder_name, script_name)
+        if script_path is None:
+            script_path = LAB_SUITE_ROOT / entry.run_target
     if not script_path.is_file():
-        ui.notify(f"Datei nicht gefunden: {script_path}", type="negative")
+        ui.notify(f"Datei nicht gefunden: {script_path.name}", type="negative")
         return
     ok, msg = submit.open_file_with_default_app(script_path)
     if ok:
@@ -81,12 +124,18 @@ def _get_app_user_template_path(folder_name: str) -> Path | None:
 
 
 def _open_app_user_template(entry: LabEntry) -> None:
-    """Öffnet assignments/user_template.py der App im Standard-Editor (für Studierende zum Ergänzen)."""
+    """Öffnet user_template.py im Editor. Studierende: Kopie in submissions/ wird geöffnet."""
     if entry.kind != "app":
         return
-    template_path = _get_app_user_template_path(entry.folder_name)
-    if not template_path:
-        ui.notify("assignments/user_template.py nicht gefunden.", type="warning")
+    if _is_instructor_mode():
+        template_path = _get_app_user_template_path(entry.folder_name)
+    else:
+        submission_copy.ensure_app_submission_files(entry.folder_name)
+        template_path = LABS_DIR / entry.folder_name / "submissions" / "user_template.py"
+        if not template_path.is_file():
+            template_path = _get_app_user_template_path(entry.folder_name)
+    if not template_path or not template_path.is_file():
+        ui.notify("user_template.py nicht gefunden.", type="warning")
         return
     ok, msg = submit.open_file_with_default_app(template_path)
     if ok:
@@ -766,6 +815,10 @@ def build_ui() -> None:
                                     ui.icon("web", size="sm").classes("text-primary")
                                 elif entry.kind == "script":
                                     ui.icon("code", size="sm").classes("text-secondary")
+                                elif entry.kind == "notebook":
+                                    ui.icon("menu_book", size="sm").classes("text-deep-purple").tooltip(
+                                        "Jupyter-Notebook"
+                                    )
                                 else:
                                     ui.icon("description", size="sm").classes("text-grey-7").tooltip(
                                         "Dokumentenabgabe (keine Programmieraufgabe)"
@@ -796,17 +849,19 @@ def build_ui() -> None:
                                     if reminder:
                                         msg, color = reminder
                                         ui.label(msg).classes(f"text-caption text-weight-medium {color}")
-                                if entry.kind in ("script", "app") and _get_doc_md_path(entry.folder_name):
+                                if entry.kind in ("script", "notebook", "app") and _get_doc_md_path(entry.folder_name):
                                     ui.button(
                                         icon="menu_book",
                                         on_click=lambda fn=entry.folder_name: _show_doc_dialog(fn),
                                     ).props("flat dense round color=secondary").tooltip("Erklärung (doc.md) im Browser anzeigen")
-                                if entry.kind == "script":
+                                if entry.kind in ("script", "notebook"):
                                     ui.button(
                                         "EDIT",
                                         icon="edit",
                                         on_click=lambda e=entry: _open_script_in_editor(e),
-                                    ).props("flat dense color=secondary").tooltip("Skript im Editor öffnen (z. B. VS Code)")
+                                    ).props("flat dense color=secondary").tooltip(
+                                        "Skript/Notebook im Editor öffnen (z. B. VS Code, Jupyter)"
+                                    )
                                 elif entry.kind == "app" and _get_app_user_template_path(entry.folder_name):
                                     ui.button(
                                         "EDIT",

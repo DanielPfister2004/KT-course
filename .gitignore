@@ -44,8 +44,9 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# Jupyter Notebook (Checkpoint-Ordner nicht versionieren)
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
 
 # VS Code
 .vscode/
@@ -67,6 +68,8 @@ coverage.xml
 !**/submissions/answers.md
 !**/submissions/answers.txt
 !**/submissions/answers.docx
+!**/submissions/canvas_export.json
+!**/submissions/palette.json
 
 # Instructor key (nicht ins Studenten-Repo exportieren)
 .instructor_key
