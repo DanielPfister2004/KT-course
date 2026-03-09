@@ -9,30 +9,22 @@ Nach dem Ausführen von `entropy1.py` mit eigenem Text in `sampletext.txt`:
 **1. Konsolenausgabe**
 
 *(Wird per „Konsolenausgabe einfügen“ unten eingefügt. Danach bitte kommentieren.)*
-Analyze the file:  C:\Users\danie\Desktop\FH Joanneum\ECE4\KT-course\lab_suite\labs\01_02_Informationstheorie\submissions\sampletext.txt
 
------File Contents:---------------------------------------------------
-Dieses Kapitel fÃ¼hrt in Codierungsverfahren und ihre informationstheoretischen KenngrÃ¶ÃŸen ein: wie Codes als BÃ¤ume dargestellt werden, wie man den mittleren BinÃ¤rstellenaufwand und die Redundanz misst, wie redundanzsparende Verfahren (FANO, HUFFMAN) funktionieren, und welche Grenze die KanalkapazitÃ¤t nach Shannon der Ãœbertragungsrate setzt. Als ersten Schritt siehst du hier die Themen; mit Beginner, Advanced und Expert kannst du danach in die Formeln und Beispiele einsteigen.
+---
+
+**2. Deine Kommentierung:**
+
+- Was fällt dir bei der Entropie deines Textes auf?  
+  *[z. B. Vergleich mit anderen Texten, Zeichenverteilung, Redundanz]*
+
+  Leerzeichen und Selbstlaute (kleingeschrieben) kommen am häufigsten vor. 
+  Umlaute werden falsch erkannt. 
+  Es sind nur wenige Zeichen die nur 1mal vorkommen. 
 
 
-
-Sechs thematische Schritte:
-
+  ** Bei diesem Beispiel gibt es keinen Merge-Button ** 
 
 
-Code und Codebaum â€” Ein Code ist eine eindeutige Zuordnung zwischen zwei Zeichenmengen (z.â€¯B. Buchstaben zu BinÃ¤rfolgen). Der Codebaum stellt diese Zuordnung dar: von der Wurzel zu den BlÃ¤ttern entstehen die CodewÃ¶rter; unterschiedliche BÃ¤ume liefern bei gleichen Zeichen unterschiedliche mittlere WortlÃ¤ngen.
-
-Mittlerer BinÃ¤rstellenaufwand â€” Die im Mittel pro Zeichen nÃ¶tige Anzahl BinÃ¤rstellen ist . Je nach Code und Zeichenwahrscheinlichkeiten ergibt sich ein anderer Aufwand; Ziel redundanzsparender Codierung ist,  nahe an den Informationsgehalt  zu bringen.
-
-Redundanz â€” Redundanz  (absolut oder relativ) misst den â€žMehraufwandâ€œ an BinÃ¤rstellen gegenÃ¼ber dem informationstheoretischen Minimum. Redundanz kann bewusst genutzt werden (Kanalcodierung: Fehlererkennung und -korrektur), oder man versucht sie zu minimieren (Quellencodierung).
-
-Redundanzsparende Codes: FANO und HUFFMAN â€” FANO: Zeichen nach fallender Wahrscheinlichkeit anordnen, Teilsummen bilden und mÃ¶glichst bei 50â€¯% unterteilen; die Unterteilungen ergeben die CodewÃ¶rter. HUFFMAN: Die beiden unwahrscheinlichsten Zeichen wiederholt zu Klassen zusammenfassen, bis eine Klasse Ã¼brig bleibt; rÃ¼ckwÃ¤rts gelesen entsteht der Codebaum. Beide Verfahren kÃ¶nnen den mittleren BinÃ¤rstellenaufwand bis auf die Entropie  senken (optimale Codes); Huffman ist allgemeiner anwendbar.
-
-Verbundentropie, bedingte Entropie, Transinformation â€” Verbundentropie : Informationsgehalt bei gemeinsamer Betrachtung zweier Zeichenquellen. Bei AbhÃ¤ngigkeit gilt . Bedingte Entropie : verbleibende Unsicherheit Ã¼ber , wenn  bekannt ist. Transinformation : die nutzbare Information, die beim EmpfÃ¤nger ankommt (nach Abzug der durch StÃ¶rung verursachten Vieldeutigkeit). Bezogen auf die Zeit ergeben sich InformationsflÃ¼sse und daraus die maximale Ãœbertragungsrate.
-
-KanalkapazitÃ¤t nach Shannon â€” Die KanalkapazitÃ¤t  bit/s gibt die theoretisch maximale fehlerfrei Ã¼bertragbare Datenrate bei Bandbreite  und StÃ¶rabstand  (SNR) an. Beispiele: Fernsprechkanal, Ethernet, Mobilfunk (GSM bis 5G) â€” die Praxis erreicht Werte unterhalb von , abhÃ¤ngig vom technischen Aufwand.
-
-WÃ¤hle im Lernmodus Beginner oder Advanced, um die Inhalte mit CodebÃ¤umen und Rechenbeispielen zu lesen; Expert vertieft Verbundentropie, Transinformation und KanalkapazitÃ¤t.
 Number of characters: 2850
 Character Dictionary: {'D': 6, 'i': 187, 'e': 363, 's': 97, ' ': 345, 'K': 9, 'a': 132, 'p': 23, 't': 147, 'l': 82, 'f': 34, 'Ã': 38, '¼': 7, 'h': 81, 'r': 156, 'n': 261, 'C': 14, 'o': 67, 'd': 118, 'u': 89, 'g': 52, 'v': 11, 'm': 56, 'c': 52, '¶': 8, 'Ÿ': 1, ':': 11, 'w': 24, 'B': 21, '¤': 20, ',': 18, 'R': 7, 'z': 30, 'V': 6, '(': 9, 'F': 12, 'A': 14, 'N': 7, 'O': 3, 'H': 4, 'U': 5, 'M': 9, ')': 9, 'k': 21, 'G': 3, 'S': 9, 'œ': 3, 'b': 49, '.': 21, 'T': 5, ';': 7, 'E': 8, 'x': 5, '\n': 10, 'â': 11, '€': 11, '”': 7, 'Z': 11, '¯': 2, 'W': 5, 'J': 1, 'I': 5, 'ž': 1, '-': 1, 'Q': 1, '5': 2, '0': 1, '%': 1, 'q': 1, '/': 1, 'P': 1, 'L': 1}
 
@@ -113,14 +105,3 @@ Character Dictionary: {'D': 6, 'i': 187, 'e': 363, 's': 97, ' ': 345, 'K': 9, 'a
 
 Average Entropy H = 4.726 bit/char
 Total Entropy of 2850 characters H=13469.66 bit = 1684.00 byte
-
----
-
-**2. Deine Kommentierung:**
-
-- Was fällt dir bei der Entropie deines Textes auf?  
-  *[z. B. Vergleich mit anderen Texten, Zeichenverteilung, Redundanz]*
-
-  Leerzeichen und Selbstlaute (kleingeschrieben) kommen am häufigsten vor. 
-  Umlaute werden falsch erkannt. 
-  Es sind nur wenige Zeichen die nur 1mal vorkommen. 
