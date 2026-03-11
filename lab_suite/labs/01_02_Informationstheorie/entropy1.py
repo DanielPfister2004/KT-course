@@ -15,7 +15,7 @@ import math
 
 # Pfad relativ zum Skript-Verzeichnis, damit das Skript von überall (z. B. App-Launcher) funktioniert
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-path = os.path.join(_SCRIPT_DIR, "sampletext.txt")
+path = os.path.join(_SCRIPT_DIR, "sidedata/sampletext.txt")
 
 # Konsolenausgabe parallel in submissions/console_log.txt schreiben (für Launcher „Konsolenausgabe einfügen“)
 _CONSOLE_LOG_PATH = os.path.join(_SCRIPT_DIR, "submissions", "console_log.txt")
