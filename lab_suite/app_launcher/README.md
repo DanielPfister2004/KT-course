@@ -49,7 +49,7 @@ Pro Aufgabenstellung (Lab) gibt es zusätzlich im Launcher eine Zeile **Abgabe (
 
 - **ZIP erstellen** – packt den Inhalt von `submissions/` in `abgabe_<Lab>_<datum>.zip` im gleichen Ordner.
 - **Ordner öffnen** – öffnet den Dateimanager (Explorer/Finder) im `submissions/`-Ordner; Studierende können das ZIP auswählen und in die E-Mail ziehen.
-- **E-Mail öffnen** – öffnet den Standard-Mail-Client mit Zieladresse und Betreff `[kt-assignment] ID=<Lab-Name>`.
+- **E-Mail öffnen** – öffnet den Standard-Mail-Client mit Zieladresse und Betreff `[kt-assignments] ID=<Lab-Name>`.
 
 **Zieladresse (repo-weit):** In **`lab_suite/submit_manifest.txt`** wird die Instructor-Adresse hinterlegt (eine Zeile, Format `submit_to_email=adresse@example.com`). Der Launcher liest diese Datei; ohne Eintrag ist „E-Mail öffnen“ deaktiviert.
 

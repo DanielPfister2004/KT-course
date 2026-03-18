@@ -110,8 +110,8 @@ def create_submissions_zip(lab_suite_root: Path, folder_name: str) -> tuple[bool
 
 
 def build_mailto_url(email: str, folder_name: str) -> str:
-    """mailto-URL mit Betreff [kt-assignment] ID=<folder_name>."""
+    """mailto-URL mit Betreff [kt-assignments] ID=<folder_name>."""
     if not email:
         return ""
-    subject = f"[kt-assignment] ID={folder_name}"
+    subject = f"[kt-assignments] ID={folder_name}"
     return f"mailto:{email}?subject={quote(subject)}"
