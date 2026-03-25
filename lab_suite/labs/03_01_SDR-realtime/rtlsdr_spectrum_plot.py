@@ -14,17 +14,24 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import time
 
-# RTL-SDR Treiberordner im Repo-Root (rtl-sdr-driver/librtlsdr.dll) in den DLL-Suchpfad
-# Script liegt in lab_suite/labs/03_01_.../ -> 3x parent = Repo-Root (KT-workspace)
-_SCRIPT_DIR = Path(__file__).resolve().parent
-_REPO_ROOT = _SCRIPT_DIR.parent.parent.parent
-_DRIVER_DIR = _REPO_ROOT / "rtl-sdr-driver"
-if _DRIVER_DIR.exists():
-    _driver_path = str(_DRIVER_DIR)
-    os.environ["PATH"] = _driver_path + os.pathsep + os.environ.get("PATH", "")
-    if hasattr(os, "add_dll_directory"):  # Python 3.8+
-        os.add_dll_directory(_driver_path)
+_driver_dir = None
+for p in [Path.cwd()] + list(Path.cwd().parents):
+    candidate = p / "rtl-sdr-driver"
+    if candidate.exists() and (candidate / "librtlsdr.dll").exists():
+        _driver_dir = candidate
+        break
+if _driver_dir is not None:
+    _path = str(_driver_dir)
+    os.environ["PATH"] = _path + os.pathsep + os.environ.get("PATH", "")
+    if hasattr(os, "add_dll_directory"):
+        os.add_dll_directory(_path)
+    print("RTL-SDR Treiber gefunden:", _driver_dir)
+else:
+    print("Hinweis: rtl-sdr-driver (librtlsdr.dll) nicht gefunden.")
+    while True:
+        time.sleep(1)
 
 import numpy as np
 import matplotlib.pyplot as plt

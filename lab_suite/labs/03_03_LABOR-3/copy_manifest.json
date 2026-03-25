@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "mode": "extend-defaults",
+  "rules": [
+    {
+      "type": "dir",
+      "source": "recordings",
+      "target": "recordings",
+      "recursive": true,
+      "if_exists": "copy"
+    },
+    {
+      "type": "dir",
+      "source": "media",
+      "target": "media",
+      "recursive": true,
+      "if_exists": "copy"
+    },
+    {
+      "type": "dir",
+      "source": "screenshots",
+      "target": "screenshots",
+      "recursive": true,
+      "if_exists": "copy"
+    },
+    {
+      "type": "dir",
+      "source": "sdr_logs",
+      "target": "sdr_logs",
+      "recursive": true,
+      "if_exists": "copy"
+    }
+  ]
+}

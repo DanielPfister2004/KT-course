@@ -60,17 +60,22 @@ coverage.xml
 .env.local
 
 # Submissions: version template/task/questions; students commit answers.* in their fork
-**/submissions/*
-!**/submissions/template.md
-!**/submissions/task.md
-!**/submissions/questions.md
-!**/submissions/questions.txt
-!**/submissions/questions.docx
-!**/submissions/answers.md
-!**/submissions/answers.txt
-!**/submissions/answers.docx
-!**/submissions/canvas_export.json
-!**/submissions/palette.json
+# **/submissions/*
+# !**/submissions/template.md
+# !**/submissions/task.md
+# !**/submissions/questions.md
+# !**/submissions/questions.txt
+# !**/submissions/questions.docx
+# !**/submissions/answers.md
+# !**/submissions/answers.txt
+# !**/submissions/answers.docx
+# !**/submissions/canvas_export.json
+# !**/submissions/palette.json
+# !**/submissions/*.py
+# !**/submissions/*.ipynb
+# !**/submissions/*.png
+# !**/submissions/*.jpg
+# !**/submissions/*.pdf
 
 # Instructor key (nicht ins Studenten-Repo exportieren)
 .instructor_key
