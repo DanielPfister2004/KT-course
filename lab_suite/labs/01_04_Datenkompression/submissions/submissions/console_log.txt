@@ -1,0 +1,1 @@
+Analyze the file:  C:\Users\danie\Desktop\FH Joanneum\ECE4\KT-course\lab_suite\labs\01_04_Datenkompression\submissions\sampletext.txt
