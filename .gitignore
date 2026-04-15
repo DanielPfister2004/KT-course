@@ -59,16 +59,16 @@ coverage.xml
 .env
 .env.local
 
-# Submissions: version template/task/questions; students commit answers.* in their fork
-# **/submissions/*
-# !**/submissions/template.md
-# !**/submissions/task.md
-# !**/submissions/questions.md
-# !**/submissions/questions.txt
-# !**/submissions/questions.docx
-# !**/submissions/answers.md
-# !**/submissions/answers.txt
-# !**/submissions/answers.docx
+Submissions: version template/task/questions; students commit answers.* in their fork
+**/submissions/*
+!**/submissions/template.md
+!**/submissions/task.md
+!**/submissions/questions.md
+!**/submissions/questions.txt
+!**/submissions/questions.docx
+!**/submissions/answers.md
+!**/submissions/answers.txt
+!**/submissions/answers.docx
 # !**/submissions/canvas_export.json
 # !**/submissions/palette.json
 # !**/submissions/*.py
@@ -90,6 +90,9 @@ hackrf-driver/server/hackrf_client_config.json
 # Pluto: lokale libiio-Bibliotheken (nur README wird versioniert)
 pluto/libiio/*.dll
 pluto/libiio/*.so
+
+# app_pluto_mod: TX-Stream-Debug (.c64 / .meta.json), nicht versionieren
+lab_suite/app_pluto_mod/debug_captures/
 
 # Node.js / Frontend
 node_modules/

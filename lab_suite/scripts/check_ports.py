@@ -20,8 +20,12 @@ import sys
 DEFAULT_PORTS = [8081, 8082]
 
 
-def get_pids_on_port_windows(port: int) -> list[int]:
-    """Ermittelt PIDs, die den Port unter Windows belegen (netstat -ano)."""
+def get_pids_on_port_windows(port: int, *, listening_only: bool = False) -> list[int]:
+    """Ermittelt PIDs, die den Port unter Windows belegen (netstat -ano).
+
+    ``listening_only=True``: nur Zeilen mit LISTENING/ABHÖREN (Server-Socket), keine
+    ESTABLISHED-Clients — vermeidet falsche Treffer und passt zum Freigeben eines Lausch-Ports.
+    """
     try:
         out = subprocess.run(
             ["netstat", "-ano"],
@@ -38,24 +42,38 @@ def get_pids_on_port_windows(port: int) -> list[int]:
     port_str = f":{port}"
     for line in out.stdout.splitlines():
         line = line.strip()
-        # LISTENING oder deutsche Locale (ABHÖREN)
-        if (port_str in line and
-                ("LISTENING" in line or "ABH" in line or "ESTABLISHED" in line)):
-            parts = line.split()
-            if len(parts) >= 1 and parts[-1].isdigit():
-                pids.add(int(parts[-1]))
+        if port_str not in line:
+            continue
+        is_listen = "LISTENING" in line or "ABH" in line
+        is_est = "ESTABLISHED" in line
+        if listening_only:
+            if not is_listen:
+                continue
+        elif not (is_listen or is_est):
+            continue
+        parts = line.split()
+        if len(parts) >= 1 and parts[-1].isdigit():
+            pids.add(int(parts[-1]))
     return sorted(pids)
 
 
-def get_pids_on_port_unix(port: int) -> list[int]:
+def get_pids_on_port_unix(port: int, *, listening_only: bool = False) -> list[int]:
     """Ermittelt PIDs, die den Port unter Linux/macOS belegen (lsof)."""
     try:
-        out = subprocess.run(
-            ["lsof", "-i", f":{port}", "-t"],
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
+        if listening_only:
+            out = subprocess.run(
+                ["lsof", "-nP", f"-iTCP:{port}", "-sTCP:LISTEN", "-t"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+        else:
+            out = subprocess.run(
+                ["lsof", "-i", f":{port}", "-t"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
     except (FileNotFoundError, subprocess.TimeoutExpired):
         return []
     if out.returncode != 0:
@@ -68,10 +86,10 @@ def get_pids_on_port_unix(port: int) -> list[int]:
     return sorted(set(pids))
 
 
-def get_pids_on_port(port: int) -> list[int]:
+def get_pids_on_port(port: int, *, listening_only: bool = False) -> list[int]:
     if sys.platform == "win32":
-        return get_pids_on_port_windows(port)
-    return get_pids_on_port_unix(port)
+        return get_pids_on_port_windows(port, listening_only=listening_only)
+    return get_pids_on_port_unix(port, listening_only=listening_only)
 
 
 def get_process_name_windows(pid: int) -> str:
@@ -145,7 +163,8 @@ def main() -> None:
     ports = args.ports if isinstance(args.ports, list) else [args.ports]
     any_found = False
     for port in ports:
-        pids = get_pids_on_port(port)
+        # Beim Freigeben (-k) nur Lausch-Sockets, nicht ESTABLISHED-Clients (z. B. Browser)
+        pids = get_pids_on_port(port, listening_only=args.kill)
         if not pids:
             if not args.quiet:
                 print(f"Port {port}: nicht belegt.")

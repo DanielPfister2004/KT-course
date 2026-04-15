@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+# Block accidental deletions in any submissions folder.
+deleted_in_submissions="$(git diff --cached --name-status --diff-filter=D | awk '{print $2}' | rg '(^|/)submissions(/|$)')"
+
+if [ -n "$deleted_in_submissions" ]; then
+  echo ""
+  echo "ERROR: Commit blocked. You are deleting files inside a submissions folder:" >&2
+  echo "$deleted_in_submissions" >&2
+  echo "" >&2
+  echo "If you really want this, restore the files first or remove them from staged deletions intentionally." >&2
+  echo "Example restore command:" >&2
+  echo "  git restore --staged --worktree -- <path>" >&2
+  exit 1
+fi
+
+exit 0
