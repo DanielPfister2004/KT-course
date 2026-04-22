@@ -6,43 +6,6 @@ Nach dem Klonen dieses Repos: Umgebung einrichten und Labs starten.
 
 ---
 
-## 0a. Git-Hook aktivieren (wichtig für submissions)
-
-Damit Abgaben in `submissions/` nicht versehentlich als Löschung committed werden, nach dem Klonen einmal das passende Setup-Skript ausführen:
-
-```bash
-# Windows (PowerShell)
-.\setup_git_hooks.ps1
-
-# Windows (CMD)
-setup_git_hooks.bat
-
-# Linux/macOS
-sh ./setup_git_hooks.sh
-```
-
-Optional prüfen:
-
-```bash
-git config --get core.hooksPath
-```
-
-Wenn die zweite Zeile `.githooks` ausgibt, ist der Schutz aktiv.
-
-**Troubleshooting (`Commit blocked`)**
-
-Wenn ein Commit wegen gelöschter Dateien in `submissions/` blockiert wird:
-
-```bash
-# Alle gelöschten Dateien in submissions wiederherstellen
-git restore --staged --worktree -- "lab_suite/labs/*/submissions/*"
-
-# Status prüfen
-git status
-```
-
-Danach nur die gewünschten Änderungen erneut stagen und committen.
-
 ## 0. Python 3.10 herunterladen und installieren
 
 Falls auf deinem PC noch kein Python 3.10 installiert ist:
