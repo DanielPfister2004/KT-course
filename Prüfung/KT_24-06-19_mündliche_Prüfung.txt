@@ -1,0 +1,16 @@
+Man konnte Laptop verwenden, musste Skript nicht ausdrucken!
+5 Fragen für jeden (von jedem Kapitel 1)
+
+-Cosinus mit Euler zerlegen,
+-Unterschied Winkel/Frequenzmodulation,
+-Amplitudenmodulation was ist das
+-Was passiert bei der Multiplikation vom Sinus?
+-Weißes Rauschen
+-Vor nachteile AM
+-Unterschied Winkel/Phasenmodulation
+-IQ Modulation Schaltbild
+-Nachteile FM
+-QAM wie funktioniertS, wie viele Bits braucht man für zb 16 QAM, Vorteil QAM zu AM,4QAM wieviel bit und wie schaut das dann aus
+-Was ist thermisches Rauschen&wieviel dBm hat es
+-was ergibt cos^2(alpha)?
+-was ist winkelmodulation
